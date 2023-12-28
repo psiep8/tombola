@@ -7,14 +7,14 @@ const App = () => {
   const [lastDrawnNumbers, setLastDrawnNumbers] = useState([]);
 
 
-  useEffect(() => {
-    const numbers = Array.from({ length: 90 }, (_, index) => ({
-      id: index + 1,
-      title: `${index + 1}`,
-      completed: false,
-    }));
-    setBoard(numbers);
-  }, []);
+  // useEffect(() => {
+  //   const numbers = Array.from({ length: 90 }, (_, index) => ({
+  //     id: index + 1,
+  //     title: `${index + 1}`,
+  //     completed: false,
+  //   }));
+  //   setBoard(numbers);
+  // }, []);
 
   const chunkArray = (arr, size) => {
     const chunkedArray = [];
@@ -32,6 +32,7 @@ const App = () => {
 
     // Resetta gli ultimi numeri estratti (lastDrawnNumbers) a un array vuoto
     setLastDrawnNumbers([]);
+    localStorage.setItem('savedBoard', JSON.stringify(board));
 
     console.log('Nuova partita');
   };
@@ -89,6 +90,27 @@ const App = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, [/* Dipendenze effettive, se necessario */]);
+
+  useEffect(() => {
+    localStorage.setItem('savedBoard', JSON.stringify(board));
+  }, [board]);
+
+  useEffect(() => {
+    // Carica il tabellone salvato in localStorage al caricamento iniziale
+    const savedBoard = JSON.parse(localStorage.getItem('savedBoard')) || [];
+
+    if (savedBoard.length > 0) {
+      setBoard(savedBoard);
+    } else {
+      // Inizializza il tabellone con 90 numeri se non ci sono dati salvati
+      const numbers = Array.from({ length: 90 }, (_, index) => ({
+        id: index + 1,
+        title: `${index + 1}`,
+        completed: false,
+      }));
+      setBoard(numbers);
+    }
+  }, []);
 
   return (
     <Container className="mt-4 min-h-screen flex flex-col">
